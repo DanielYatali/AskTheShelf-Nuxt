@@ -1,5 +1,5 @@
 <script setup>
-import amazonIcon from "assets/amazon.svg";
+import logo from '~/assets/logo.png'
 import MarkdownIt from 'markdown-it';
 import {useMainStore} from "~/store/main.js";
 
@@ -63,142 +63,162 @@ const renderMarkdown = (text) => {
 
 </script>
 
+<!--<template>-->
+<!--  <section class="text-gray-800">-->
+<!--    <div class="max-w-7xl mx-auto px-5 py-20 text-center">-->
+<!--      <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Discover Your Perfect Product</h1>-->
+<!--      <p class="text-lg md:text-xl mb-8">Ask The Shelf makes shopping easy with natural language searches and comprehensive reviews.</p>-->
+<!--      <p class="text-lg md:text-xl mt-8 mb-10">Have a question about a product? Just ask it!</p>-->
+
+<!--      &lt;!&ndash; Search using natural language &ndash;&gt;-->
+<!--      <div class="mb-10">-->
+<!--        <h2 class="text-lg md:text-xl font-semibold mb-4">Search with Natural Language</h2>-->
+<!--        <div class="flex justify-center items-center gap-4">-->
+<!--          <div class="relative w-full max-w-lg">-->
+<!--            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">-->
+<!--              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>-->
+<!--            </div>-->
+<!--            <input type="text" class="bg-white border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="What are you looking for?" required>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <br>-->
+<!--        <button type="submit" class="py-2.5 px-6 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Search</button>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Search using Amazon URL &ndash;&gt;-->
+<!--      <div>-->
+<!--        <h2 class="text-lg md:text-xl font-semibold mb-4">Search by Amazon URL</h2>-->
+<!--        <div class="flex justify-center items-center gap-4">-->
+<!--          <div class="relative w-full max-w-lg">-->
+<!--            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">-->
+<!--              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>-->
+<!--            </div>-->
+<!--            <input type="text" class="bg-white border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Paste your Amazon link here" required>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <br>-->
+<!--        <button type="submit" class="py-2.5 px-6 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Search</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </section>-->
+
+<!--  <section class="py-16 bg-white">-->
+<!--    <div class="container mx-auto px-4">-->
+<!--      <div class="flex flex-wrap -mx-4">-->
+<!--        <div class="w-full lg:w-1/2 px-4 mb-8 lg:mb-0 flex items-center">-->
+<!--          <div>-->
+<!--            <h2 class="text-2xl font-bold mb-4">How It Works</h2>-->
+<!--            <p class="mb-4">Discover how Ask The Shelf can transform your shopping experience. Our intuitive platform allows you to search for products using natural language, engage in interactive chats for more information, and explore comprehensive reviews to make informed decisions.</p>-->
+<!--            <p>Simply ask a question or paste an Amazon link, and let Ask The Shelf do the rest. It's shopping made simple and smart.</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="w-full lg:w-1/2 px-4">-->
+<!--          <div class="aspect-w-16 aspect-h-9">-->
+<!--            <iframe class="w-full h-full" src="YOUR_VIDEO_EMBED_URL_HERE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </section>-->
+
+
+<!--</template>-->
+
+
 <template>
-  <template v-if="product">
-    <div class="dark:bg-gray-800 py-8">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row -mx-4">
-          <div class="md:flex-1 px-4">
-            <div class="h-[460px] rounded-lg mb-4">
-              <img class="w-full h-full object-cover" :src="product.image_url" alt="Product Image">
-            </div>
-            <div class="flex -mx-2 mb-4">
-              <div class="w-1/2 px-2">
-                <button
-                    class="w-full bg-gray-900 dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">
-                  Go to Amazon
-                </button>
-              </div>
-              <div class="w-1/2 px-2">
-                <button
-                    class="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">
-                  Generate Review
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="md:flex-1 px-4">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">{{ product.title }}</h2>
-            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
-              {{ product.features[0] }}
-            </p>
-            <div class="flex mb-4">
-              <div class="mr-4">
-                <span class="font-bold text-gray-700 dark:text-gray-300">Price:</span>
-                <span class="text-gray-600 dark:text-gray-300">${{ product.price }}</span>
-              </div>
+  <div class="relative overflow-hidden">
+    <div class="relative">
+
+
+      <section class="text-gray-800">
+        <div class="max-w-7xl mx-auto px-5 pt-20 text-center">
+          <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Discover Your Perfect Product</h1>
+          <p class="text-lg md:text-xl mb-8">Ask The Shelf makes shopping easy with natural language searches and
+            comprehensive reviews.</p>
+          <p class="text-lg md:text-xl mt-8 mb-10">Have a question about a product? Just ask it!</p>
+        </div>
+      </section>
+
+      <!-- Moved "How It Works" section up for immediate visibility -->
+      <section>
+        <div class="container mx-auto px-4">
+          <div class="flex flex-wrap -mx-4">
+            <div class="w-full lg:w-1/2 px-4 mb-8 lg:mb-0 flex items-center">
               <div>
-                <span class="font-bold text-gray-700 dark:text-gray-300">Availability:</span>
-                <span class="text-gray-600 dark:text-gray-300">In Stock</span>
+                <h2 class="text-2xl font-bold mb-4">How It Works</h2>
+                <p class="mb-4">Discover how Ask The Shelf can transform your shopping experience. Our intuitive
+                  platform allows you to search for products using natural language, engage in interactive chats for
+                  more information, and explore comprehensive reviews to make informed decisions.</p>
+                <p>Simply ask a question or paste an Amazon link, and let Ask The Shelf do the rest. It's shopping made
+                  simple and smart.</p>
               </div>
             </div>
-            <div class="mb-4">
-              <span class="font-bold text-gray-700 dark:text-gray-300">Select Buyer</span>
-              <div class="flex items-center mt-2">
-                <img class="dark:bg-gray-200 w-8 h-8 p-1 mr-2 rounded-full" :src="amazonIcon" alt="Amazon Icon">
-                <img class="dark:bg-gray-200 w-8 h-8 p-1 mr-2 rounded-full" :src="amazonIcon" alt="Amazon Icon">
-                <img class="dark:bg-gray-200 w-8 h-8 p-1 mr-2 rounded-full" :src="amazonIcon" alt="Amazon Icon">
-                <img class="dark:bg-gray-200 w-8 h-8 p-1 mr-2 rounded-full" :src="amazonIcon" alt="Amazon Icon">
+            <div class="w-full lg:w-1/2 px-4">
+              <div class="aspect-w-16 aspect-h-9">
+                <iframe class="w-full h-full" src="https://www.youtube.com/watch?v=uCjcc1TXk5c" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
               </div>
-            </div>
-
-            <div>
-              <span class="font-bold text-gray-700 dark:text-gray-300">Product Description:</span>
-              <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">
-                {{ product.description }}
-              </p>
             </div>
           </div>
         </div>
-        <div class="" v-html="renderMarkdown(product.generated_review)"></div>
-      </div>
+      </section>
 
+      <!-- Search sections follow after the "How It Works" for a more logical flow -->
+      <section class="text-gray-800">
+        <div class="max-w-7xl mx-auto px-5 py-20 text-center">
+          <!-- Search using natural language -->
+          <div class="mb-10">
+            <h2 class="text-lg md:text-xl font-semibold mb-4">Search with Natural Language</h2>
+            <div class="flex justify-center items-center gap-4">
+              <div class="relative w-full max-w-lg">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                       xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input v-model="query" type="text"
+                       class="bg-white border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+                       placeholder="What are you looking for?" required>
+              </div>
+            </div>
+            <br>
+            <button @click="search"
+                    class="py-2.5 px-6 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Search
+            </button>
+          </div>
+
+          <!-- Search using Amazon URL -->
+          <div>
+            <h2 class="text-lg md:text-xl font-semibold mb-4">Search by Amazon URL</h2>
+            <div class="flex justify-center items-center gap-4">
+              <div class="relative w-full max-w-lg">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                       xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input v-model="url" type="text"
+                       class="bg-white border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+                       placeholder="Paste your Amazon link here" required>
+              </div>
+            </div>
+            <br>
+            <button @click="submit"
+                    class="py-2.5 px-6 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Search
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
-
-  </template>
-  <template v-else>
-
-    <section class="bg-white dark:bg-gray-900">
-      <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-        <div class="mr-auto place-self-center lg:col-span-7">
-          <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
-            Payments tool for software companies</h1>
-          <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">From
-            checkout to global sales tax compliance, companies around the world use Flowbite to simplify their payment
-            stack.</p>
-          <form class="flex items-center">
-            <label for="voice-search" class="sr-only">Search</label>
-            <div class="relative w-full">
-              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                     fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13.2 9.8a3.4 3.4 0 0 0-4.8 0L5 13.2A3.4 3.4 0 0 0 9.8 18l.3-.3m-.3-4.5a3.4 3.4 0 0 0 4.8 0L18 9.8A3.4 3.4 0 0 0 13.2 5l-1 1"/>
-                </svg>
-
-              </div>
-              <input v-model="url" type="text"
-                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                     placeholder="Enter you amazon link here" required/>
-            </div>
-            <button @click.prevent="submit"
-                    class="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              <svg class="w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                   viewBox="0 0 20 20">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-              </svg>
-              Search
-            </button>
-          </form>
-
-          <br>
-
-          <form class="flex items-center">
-            <label for="voice-search" class="sr-only">Search</label>
-            <div class="relative w-full">
-              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                     fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13.2 9.8a3.4 3.4 0 0 0-4.8 0L5 13.2A3.4 3.4 0 0 0 9.8 18l.3-.3m-.3-4.5a3.4 3.4 0 0 0 4.8 0L18 9.8A3.4 3.4 0 0 0 13.2 5l-1 1"/>
-                </svg>
-
-              </div>
-              <input v-model="query" type="text"
-                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                     placeholder="Search with natural language" required/>
-            </div>
-            <button @click.prevent="search"
-                    class="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              <svg class="w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                   viewBox="0 0 20 20">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-              </svg>
-              Search
-            </button>
-          </form>
-        </div>
-        <div class="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
-          <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png" alt="mockup">
-        </div>
-      </div>
-    </section>
-  </template>
-
+  </div>
 </template>
 
-<style scoped>
+<style>
+
 
 </style>

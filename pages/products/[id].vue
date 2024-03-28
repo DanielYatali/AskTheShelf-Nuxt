@@ -1,10 +1,11 @@
 <script setup>
-
+import logo from '~/assets/logo.png'
 import {useRoute} from "vue-router";
 import MarkdownIt from "markdown-it";
 import {useMainStore} from "~/store/main.js";
 import {initFlowbite} from "flowbite";
 import {onMounted} from "vue";
+
 const mainStore = useMainStore();
 const {$Service} = useNuxtApp()
 const router = useRoute();
@@ -13,8 +14,6 @@ await $Service.get_product(id)
 onMounted(() => {
   initFlowbite()
 })
-
-
 
 
 const product = {
@@ -109,11 +108,25 @@ const renderMarkdown = (text) => {
 const message = ref("");
 const openChat = ref(false);
 const messages = ref([]);
-const sendMessage = async() => {
+const sendMessage = async () => {
   messages.value.push({message: message.value, sender: "user"})
   let msg = await $Service.product_chat(id, message.value)
   messages.value.push({message: msg, sender: "ai"})
 }
+const tabs = ref( [
+  {
+    name: "Details",
+    active: false
+  },
+  {
+    name: "AI Review",
+    active: true
+  },
+  {
+    name: "Chat",
+    active: false
+  },
+])
 
 </script>
 
@@ -122,10 +135,10 @@ const sendMessage = async() => {
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row -mx-4">
         <div class="md:flex-1 px-4">
-          <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">{{ mainStore.product.title }}</h2>
           <div class="rounded-lg mb-4">
             <img class="m-auto" :src="mainStore.product.image_url" alt="Product Image">
           </div>
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">{{ mainStore.product.title }}</h2>
 
         </div>
         <div class="md:flex-1 px-4">
@@ -139,58 +152,8 @@ const sendMessage = async() => {
               {{ mainStore.product.rating }}</span>
             </div>
           </div>
-
-
-          <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
-            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab"
-                data-tabs-toggle="#default-styled-tab-content"
-                data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500"
-                data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300"
-                role="tablist">
-              <li class="me-2" role="presentation">
-                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="generated-review-styled-tab"
-                        data-tabs-target="#styled-review" type="button" role="tab" aria-controls="review"
-                        aria-selected="false">Review
-                </button>
-              </li>
-              <li class="me-2" role="presentation">
-                <button
-                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                    id="features-styled-tab" data-tabs-target="#styled-features" type="button" role="tab"
-                    aria-controls="features" aria-selected="false">Features
-                </button>
-              </li>
-              <li class="me-2" role="presentation">
-                <button
-                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                    id="specs-styled-tab" data-tabs-target="#styled-specs" type="button" role="tab"
-                    aria-controls="specs" aria-selected="false">Specs
-                </button>
-              </li>
-              <li class="me-2" role="presentation">
-                <button
-                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                    id="overview-styled-tab" data-tabs-target="#styled-overview" type="button" role="tab"
-                    aria-controls="specs" aria-selected="false">Overview
-                </button>
-              </li>
-              <li class="me-2" role="presentation">
-                <button
-                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                    id="tips-styled-tab" data-tabs-target="#styled-tips" type="button" role="tab"
-                    aria-controls="specs" aria-selected="false">Tips
-                </button>
-              </li>
-            </ul>
-          </div>
-          <div id="default-styled-tab-content">
-            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-review" role="tabpanel"
-                 aria-labelledby="review-tab">
-              <p v-html="renderMarkdown(mainStore.product.generated_review)" class="dark:text-gray-400">
-              </p>
-            </div>
-            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-features" role="tabpanel"
-                 aria-labelledby="features-tab">
+          <template v-if="tabs[0].active">
+            <div class="p-4 rounded-lg dark:bg-gray-800">
               <p class="text-sm dark:text-gray-400">
                 <ul>
                   <li v-for="feature in mainStore.product.features" :key="feature" class="flex items-center py-1">
@@ -199,27 +162,100 @@ const sendMessage = async() => {
                 </ul>
               </p>
             </div>
-            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-specs" role="tabpanel"
-                 aria-labelledby="specs-tab">
-              <ul class="text-sm  dark:text-gray-400">
-                <li v-for="(value, key) in mainStore.product.specs" :key="key" class="flex justify-between">
-                  <span class="font-bold">{{ key }}:</span>
-                  <span>{{ value }}</span>
-                </li>
-              </ul>
+          </template>
+          <template v-if="tabs[1].active">
+            <div class="p-4 rounded-lg dark:bg-gray-800">
+              <p v-html="renderMarkdown(mainStore.product.generated_review)" class="dark:text-gray-400">
+              </p>
             </div>
+          </template>
+          <template v-if="tabs[2].active">
+            Chat
 
-            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-overview" role="tabpanel"
-                 aria-labelledby="overview-tab">
-              {{ product.overview }}
+          </template>
 
-            </div>
 
-            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-tips" role="tabpanel"
-                 aria-labelledby="tips-tab">
-              {{ product.tips }}
-            </div>
-          </div>
+
+
+<!--          <div class="mb-4 border-b border-gray-200 dark:border-gray-700">-->
+<!--            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab"-->
+<!--                data-tabs-toggle="#default-styled-tab-content"-->
+<!--                data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500"-->
+<!--                data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300"-->
+<!--                role="tablist">-->
+<!--              <li class="me-2" role="presentation">-->
+<!--                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="generated-review-styled-tab"-->
+<!--                        data-tabs-target="#styled-review" type="button" role="tab" aria-controls="review"-->
+<!--                        aria-selected="false">Review-->
+<!--                </button>-->
+<!--              </li>-->
+<!--              <li class="me-2" role="presentation">-->
+<!--                <button-->
+<!--                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"-->
+<!--                    id="features-styled-tab" data-tabs-target="#styled-features" type="button" role="tab"-->
+<!--                    aria-controls="features" aria-selected="false">Features-->
+<!--                </button>-->
+<!--              </li>-->
+<!--              <li class="me-2" role="presentation">-->
+<!--                <button-->
+<!--                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"-->
+<!--                    id="specs-styled-tab" data-tabs-target="#styled-specs" type="button" role="tab"-->
+<!--                    aria-controls="specs" aria-selected="false">Specs-->
+<!--                </button>-->
+<!--              </li>-->
+<!--              <li class="me-2" role="presentation">-->
+<!--                <button-->
+<!--                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"-->
+<!--                    id="overview-styled-tab" data-tabs-target="#styled-overview" type="button" role="tab"-->
+<!--                    aria-controls="specs" aria-selected="false">Overview-->
+<!--                </button>-->
+<!--              </li>-->
+<!--              <li class="me-2" role="presentation">-->
+<!--                <button-->
+<!--                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"-->
+<!--                    id="tips-styled-tab" data-tabs-target="#styled-tips" type="button" role="tab"-->
+<!--                    aria-controls="specs" aria-selected="false">Tips-->
+<!--                </button>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--          <div id="default-styled-tab-content">-->
+<!--            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-review" role="tabpanel"-->
+<!--                 aria-labelledby="review-tab">-->
+<!--              <p v-html="renderMarkdown(mainStore.product.generated_review)" class="dark:text-gray-400">-->
+<!--              </p>-->
+<!--            </div>-->
+<!--            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-features" role="tabpanel"-->
+<!--                 aria-labelledby="features-tab">-->
+<!--              <p class="text-sm dark:text-gray-400">-->
+<!--                <ul>-->
+<!--                  <li v-for="feature in mainStore.product.features" :key="feature" class="flex items-center py-1">-->
+<!--                    <span class="ml-2">{{ feature }}</span>-->
+<!--                  </li>-->
+<!--                </ul>-->
+<!--              </p>-->
+<!--            </div>-->
+<!--            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-specs" role="tabpanel"-->
+<!--                 aria-labelledby="specs-tab">-->
+<!--              <ul class="text-sm  dark:text-gray-400">-->
+<!--                <li v-for="(value, key) in mainStore.product.specs" :key="key" class="flex justify-between">-->
+<!--                  <span class="font-bold">{{ key }}:</span>-->
+<!--                  <span>{{ value }}</span>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </div>-->
+
+<!--            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-overview" role="tabpanel"-->
+<!--                 aria-labelledby="overview-tab">-->
+<!--              {{ product.overview }}-->
+
+<!--            </div>-->
+
+<!--            <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-tips" role="tabpanel"-->
+<!--                 aria-labelledby="tips-tab">-->
+<!--              {{ product.tips }}-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
@@ -265,9 +301,9 @@ const sendMessage = async() => {
       </div>
       <template v-for="msg in messages">
 
-      <!--  User Chat Message -->
-      <div v-if="msg.sender === 'user'" class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
-          class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+        <!--  User Chat Message -->
+        <div v-if="msg.sender === 'user'" class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
+            class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
           <div class="rounded-full bg-gray-100 border p-1"><svg stroke="none" fill="black" stroke-width="0"
                                                                 viewBox="0 0 16 16" height="20" width="20"
                                                                 xmlns="http://www.w3.org/2000/svg">
@@ -276,12 +312,12 @@ const sendMessage = async() => {
               </path>
             </svg></div>
         </span>
-        <p class="leading-relaxed"><span class="block font-bold text-gray-700">You </span>
-          {{msg.message}}</p>
-      </div>
-      <!-- Ai Chat Message  -->
-      <div v-else class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
-          class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+          <p class="leading-relaxed"><span class="block font-bold text-gray-700">You </span>
+            {{ msg.message }}</p>
+        </div>
+        <!-- Ai Chat Message  -->
+        <div v-else class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
+            class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
           <div class="rounded-full bg-gray-100 border p-1"><svg stroke="none" fill="black" stroke-width="1.5"
                                                                 viewBox="0 0 24 24" aria-hidden="true" height="20"
                                                                 width="20" xmlns="http://www.w3.org/2000/svg">
@@ -290,10 +326,10 @@ const sendMessage = async() => {
               </path>
             </svg></div>
         </span>
-        <p class="leading-relaxed"><span class="block font-bold text-gray-700">AI </span>
-          {{ msg.message }}
-        </p>
-      </div>
+          <p class="leading-relaxed"><span class="block font-bold text-gray-700">AI </span>
+            {{ msg.message }}
+          </p>
+        </div>
       </template>
 
     </div>
@@ -312,6 +348,100 @@ const sendMessage = async() => {
       </div>
     </div>
 
+  </div>
+
+
+  <div
+      class="fixed bottom-0 z-50 w-full -translate-x-1/2 bg-white border-t border-gray-200 left-1/2 dark:bg-gray-700 dark:border-gray-600">
+    <div class="w-full">
+      <div class="grid max-w-xs grid-cols-3 gap-1 p-1 mx-auto my-2 bg-gray-100 rounded-lg dark:bg-gray-600"
+           role="group">
+        <template v-for="tab in tabs">
+          <button
+              @click="tabs.forEach(t => t.active = false); tab.active = true"
+              :class="tab.active ? 'bg-gray-900 text-white' : ''"
+              class="px-5 py-1.5 text-xs font-medium text-gray-900 hover:bg-gray-900 hover:text-white rounded-lg">
+            {{ tab.name }}
+          </button>
+        </template>
+      </div>
+    </div>
+    <div class="grid h-full max-w-lg grid-cols-5 mx-auto">
+      <button data-tooltip-target="tooltip-home" type="button"
+              class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <svg
+            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path
+              d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+        </svg>
+        <span class="sr-only">Home</span>
+      </button>
+      <div id="tooltip-home" role="tooltip"
+           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+        Home
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+      <button data-tooltip-target="tooltip-bookmark" type="button"
+              class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <svg
+            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 20">
+          <path
+              d="M13 20a1 1 0 0 1-.64-.231L7 15.3l-5.36 4.469A1 1 0 0 1 0 19V2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v17a1 1 0 0 1-1 1Z"/>
+        </svg>
+        <span class="sr-only">Bookmark</span>
+      </button>
+      <div id="tooltip-bookmark" role="tooltip"
+           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+        Bookmark
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+      <button data-tooltip-target="tooltip-search" type="button"
+              class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <img
+            :src="logo"
+            class="mr-3 h-8"
+            alt="Ask the shelf logo"
+        />
+        <span class="sr-only">Product</span>
+      </button>
+      <div id="tooltip-search" role="tooltip"
+           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+        Product
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+      <button data-tooltip-target="tooltip-post" type="button"
+              class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <svg
+            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 1v16M1 9h16"/>
+        </svg>
+        <span class="sr-only">New post</span>
+      </button>
+      <div id="tooltip-post" role="tooltip"
+           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+        New post
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+      <button data-tooltip-target="tooltip-settings" type="button"
+              class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <svg
+            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+        </svg>
+
+        <span class="sr-only">Profile</span>
+      </button>
+      <div id="tooltip-settings" role="tooltip"
+           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+        Profile
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+    </div>
   </div>
 
 </template>
