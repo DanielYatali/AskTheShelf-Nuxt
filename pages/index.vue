@@ -2,7 +2,9 @@
 import logo from '~/assets/logo.png'
 import MarkdownIt from 'markdown-it';
 import {useMainStore} from "~/store/main.js";
-
+import {useAuth0} from "@auth0/auth0-vue";
+const {user, isAuthenticated, getAccessTokenSilently, loginWithRedirect, logout, isLoading} = useAuth0()
+console.log(user)
 const mainStore = useMainStore();
 const {$Service} = useNuxtApp()
 
