@@ -4,6 +4,7 @@
 import {useRuntimeConfig} from "#imports";
 import {useAuth0} from '@auth0/auth0-vue';
 
+const {$auth0} = useNuxtApp()
 definePageMeta({
   layout: "basic",
 });
@@ -23,18 +24,18 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const {query} = route
 
-if (query.invitation !== undefined) {
-  let auth0 = useAuth0();
-  let urlString = '/callback'
-  if (query && Object.keys(query).length > 0) {
-    const queryParams = new URLSearchParams(query);
-    urlString += `/?${queryParams.toString()}`;
-  }
-  auth0.loginWithRedirect({
-    redirect_uri: config.public.appBase + urlString,
-    invitation: query.invitation,
-  })
-}
+// if (query.invitation !== undefined) {
+//   let auth0 = useAuth0();
+//   let urlString = '/callback'
+//   if (query && Object.keys(query).length > 0) {
+//     const queryParams = new URLSearchParams(query);
+//     urlString += `/?${queryParams.toString()}`;
+//   }
+//   auth0.loginWithRedirect({
+//     redirect_uri: config.public.appBase + urlString,
+//     invitation: query.invitation,
+//   })
+// }
 const login = () => {
   let auth0 = useAuth0();
   localStorage.clear()

@@ -1,17 +1,43 @@
 <script setup>
-import logo from '~/assets/logo.png'
 import MarkdownIt from 'markdown-it';
 import {useMainStore} from "~/store/main.js";
 import {useAuth0} from "@auth0/auth0-vue";
+import {useRuntimeConfig} from "#imports";
+
+const config = useRuntimeConfig()
 const {user, isAuthenticated, getAccessTokenSilently, loginWithRedirect, logout, isLoading} = useAuth0()
 console.log(user)
 const mainStore = useMainStore();
 const {$Service} = useNuxtApp()
+// watch(isAuthenticated.value, async (value) => {
+//   if (value) {
+//     await handleLogin()
+//   }
+// })
+const handleLogin = async () => {
+  try {
+    console.log(user)
+    let existingUser = await $Service.get_user_by_email(user.value)
+    console.log(existingUser)
+    if (!existingUser) {
+      let newUser = await $Service.create_user(user)
+      await loginWithRedirect(
+          {
+            redirect_uri: config.public.appBase + "/callback",
+          }
+      )
+
+
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+await handleLogin()
 
 const url = ref("")
 const product = ref()
 const query = ref("")
-
 const search = async () => {
   if (query.value === "") {
     return
@@ -19,9 +45,9 @@ const search = async () => {
   try {
     const response = await $Service.search(query.value)
     console.log(response)
-    if (response[0]["id"]) {
+    if (response[0]["product_id"]) {
 
-      let prod_id = response[0]["id"]
+      let prod_id = response[0]["product_id"]
       navigateTo(`/products/${prod_id}`)
     }
   } catch (e) {
