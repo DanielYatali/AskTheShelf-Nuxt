@@ -108,6 +108,9 @@ export class Service {
 
     async get_product(id) {
         try {
+            if (this.mainStore.product && this.mainStore.product.product_id === id) {
+                return
+            }
             let response = await this.api.request(this.endpoint + "/api/v1/products/" + id, "GET");
             if (response) {
                 this.mainStore.product = response
@@ -126,5 +129,25 @@ export class Service {
 
     async search(query) {
         return this.api.request(this.endpoint + "/api/v1/products/embedding/search", "POST", "application/json", {query: query})
+    }
+
+    parseMarkdown(markdown) {
+        // Replace Markdown headers with HTML headers
+        markdown = markdown.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        markdown = markdown.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+        markdown = markdown.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+        // Replace Markdown bold with HTML bold
+        markdown = markdown.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>');
+        markdown = markdown.replace(/__(.*)__/gim, '<strong>$1</strong>');
+
+        // Replace Markdown lists with HTML lists
+        markdown = markdown.replace(/^\* (.*)/gim, '<ul>\n<li>$1</li>\n</ul>');
+        markdown = markdown.replace(/^\- (.*)/gim, '<ul>\n<li>$1</li>\n</ul>');
+
+        // Handle nested lists
+        markdown = markdown.replace(/<\/ul>\n<ul>/gim, '');
+
+        return markdown.trim();
     }
 }
