@@ -4,7 +4,6 @@ import {useMainStore} from "~/store/main.js";
 import logo from "~/assets/logo.png";
 import {useAuth0} from "@auth0/auth0-vue";
 import Chat from "~/components/organism/Chat.vue";
-
 const mainStore = useMainStore();
 const {$Service} = useNuxtApp()
 const router = useRoute();
@@ -106,37 +105,37 @@ const renderMarkdown = (text) => {
 const message = ref("");
 const openChat = ref(false);
 const messages = ref([
-  {message: "Hi, how can I help you today?", sender: "ai"},
+  {message: "Hi, how can I help you today?", role: "assistant"},
   {message: "I would like to know more about this product", sender: "user"},
-  {message: "Sure, what would you like to know?", sender: "ai"},
+  {message: "Sure, what would you like to know?", role: "assistant"},
   {message: "What are the features of this product?", sender: "user"},
   {
     message: "This phone is unlocked and compatible with any carrier of choice on GSM and CDMA networks (e.g. AT&T, T-Mobile, Sprint, Verizon, US Cellular, Cricket, Metro, Tracfone, Mint Mobile, etc.).",
-    sender: "ai"
+    role: "assistant"
   },
-  {message: "Tested for battery health and guaranteed to have a minimum battery capacity of 80%.", sender: "ai"},
+  {message: "Tested for battery health and guaranteed to have a minimum battery capacity of 80%.", role: "assistant"},
   {
     message: "Successfully passed a full diagnostic test which ensures like-new functionality and removal of any prior-user personal information.",
-    sender: "ai"
+    role: "assistant"
   },
   {
     message: "The device does not come with headphones or a SIM card. It does include a generic (Mfi certified) charger and charging cable.",
-    sender: "ai"
+    role: "assistant"
   },
   {
     message: "Inspected and guaranteed to have minimal cosmetic damage, which is not noticeable when the device is held at arm's length.",
-    sender: "ai"
+    role: "assistant"
   },
   {message: "What is the price of this product?", sender: "user"},
-  {message: "The price of this product is $268", sender: "ai"},
+  {message: "The price of this product is $268", role: "assistant"},
   {message: "What is the rating of this product?", sender: "user"},
-  {message: "The rating of this product is 4.2", sender: "ai"},
+  {message: "The rating of this product is 4.2", role: "assistant"},
   {message: "What are the specifications of this product?", sender: "user"},
 ])
 const sendMessage = async () => {
-  messages.value.push({message: message.value, sender: "user"})
+  messages.value.push({content: message.value, sender: "user"})
   let msg = await $Service.product_chat(id, message.value)
-  messages.value.push({message: msg, sender: "ai"})
+  messages.value.push({content: msg, role: "assistant"})
 }
 const tabs = ref([
   {
@@ -158,6 +157,7 @@ const tabs = ref([
 <template>
   <div class="flex flex-col">
     <div class="flex-grow px-4">
+<!--      <Button class="text-black" label="PrimeVue bttun" />-->
       <!--      Basic product details-->
       <div>
         <div class="product_description">
@@ -182,8 +182,8 @@ const tabs = ref([
 
         Tabs
         <template v-if="tabs[0].active">
-          <div class="p-4 rounded-lg dark:bg-gray-800">
-            <p class="text-sm dark:text-gray-400">
+          <div class="p-4 ">
+            <p class="text-sm ">
               <ul>
                 <li v-for="feature in mainStore.product.features" :key="feature" class="flex items-center py-1">
                   <span class="ml-2">{{ feature }}</span>
@@ -193,8 +193,8 @@ const tabs = ref([
           </div>
         </template>
         <template v-if="tabs[1].active">
-          <div class="p-4 rounded-lg dark:bg-gray-800">
-            <p v-html="renderMarkdown(mainStore.product.generated_review)" class="dark:text-gray-400">
+          <div class="p-4 rounded-lg">
+            <p v-html="renderMarkdown(mainStore.product.generated_review)" class="">
             </p>
           </div>
         </template>

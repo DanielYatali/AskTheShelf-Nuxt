@@ -108,6 +108,9 @@ export class Service {
 
     async get_product(id) {
         try {
+            if (!id) {
+                return
+            }
             if (this.mainStore.product && this.mainStore.product.product_id === id) {
                 return
             }
@@ -117,6 +120,7 @@ export class Service {
             } else {
                 this.mainStore.product = null
             }
+            return response
         } catch (error) {
             throw error;
         }
@@ -128,7 +132,22 @@ export class Service {
 
 
     async search(query) {
-        return this.api.request(this.endpoint + "/api/v1/products/embedding/search", "POST", "application/json", {query: query})
+        return this.api.request(this.endpoint + "/api/v1/products/chat", "POST", "application/json", {query: query})
+    }
+
+    async getConversation(user) {
+        try {
+            let response = await this.api.request(this.endpoint + "/api/v1/conversations/" + user.sub, "GET")
+            if (response) {
+                this.mainStore.messages = response.messages
+            }
+        } catch (error) {
+            if (error.status === 404) {
+                this.mainStore.messages = []
+            }else {
+                throw error;
+            }
+        }
     }
 
     parseMarkdown(markdown) {
