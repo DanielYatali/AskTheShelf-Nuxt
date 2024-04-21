@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     ],
     primevue: {
         unstyled: true,
-        importPT: {from: "~/presets/lara/"},
+        importPT: { from: path.resolve(__dirname, './presets/lara/') },
         components: {
             exclude: ["Editor", "Chart"]
         }
