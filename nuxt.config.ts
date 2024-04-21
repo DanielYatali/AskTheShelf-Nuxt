@@ -1,5 +1,4 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import path from "path";
 
 export default defineNuxtConfig({
     devtools: {enabled: false},
@@ -7,14 +6,7 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/tailwindcss',
         '@pinia/nuxt',
-        'nuxt-primevue'
     ],
-    primevue: {
-        unstyled: true,
-        components: {
-            exclude: ["Editor", "Chart"]
-        }
-    },
     runtimeConfig: {
         public: {
             authDomain: '',
@@ -25,8 +17,5 @@ export default defineNuxtConfig({
             authLogoutRedirectUri: '',
             serviceEndpoint: '',
         }
-    },
-    build: {
-        transpile: ["nuxt-primevue"],
     },
 })

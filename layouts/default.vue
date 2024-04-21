@@ -13,7 +13,6 @@ const {$Service} = useNuxtApp()
 const router = useRoute();
 const {id} = router.params
 
-// await $Service.get_product(id)
 
 await $Service.getConversation(user.value)
 
@@ -109,7 +108,6 @@ const selectItem = (item) => {
   isOpen.value = false; // Close dropdown after selection
   console.log(isOpen.value)
 }
-
 </script>
 <template>
   <div class="antialiased">

@@ -157,8 +157,6 @@ const tabs = ref([
 <template>
   <div class="flex flex-col">
     <div class="flex-grow px-4">
-<!--      <Button class="text-black" label="PrimeVue bttun" />-->
-      <!--      Basic product details-->
       <div>
         <div class="product_description">
           <div class="flex-1 px-4">
