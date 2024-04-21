@@ -11,10 +11,6 @@ export default defineNuxtConfig({
     ],
     primevue: {
         unstyled: true,
-        resolvePath: {
-            '~': path.resolve(__dirname, '.'),
-        },
-
         importPT: {from: '~/presets/lara/'},
         components: {
             exclude: ["Editor", "Chart"]
@@ -30,5 +26,8 @@ export default defineNuxtConfig({
             authLogoutRedirectUri: '',
             serviceEndpoint: '',
         }
-    }
+    },
+    build: {
+        transpile: ["nuxt-primevue"],
+    },
 })
