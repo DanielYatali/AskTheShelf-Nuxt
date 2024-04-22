@@ -97,7 +97,7 @@ export class Service {
     }
 
     async start_job(url) {
-        return this.api.request(this.endpoint + "/api/v1/jobs", "POST", "application/json", {url: url})
+        return this.api.request(this.endpoint + "/api/v1/jobs/", "POST", "application/json", {url: url})
 
     }
 
