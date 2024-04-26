@@ -146,7 +146,7 @@ onMounted(() => {
       </div>
     </template>
     <div class="flex justify-end">
-    <Typing/>
+    <Typing v-if="mainStore?.loading"/>
     </div>
 
   </div>
