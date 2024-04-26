@@ -37,6 +37,7 @@ const sendMessage = async () => {
   }
   if (message.value === "") return
   mainStore.addMessage({content: message.value, role: "user"})
+  mainStore.loading = true
   if (selectedSearchType.value.name === "Link") {
     const response = await $Service.start_job(message.value)
     const productId = response['product_id']
@@ -47,6 +48,7 @@ const sendMessage = async () => {
           const product_json = await $Service.get_product(productId)
           if (product_json['product_id']) {
             // navigateTo(`/products/${product_json['product_id']}`)
+            mainStore.loading = false
             await $Service.getConversation(user.value)
             clearInterval(interval)
           }
@@ -56,10 +58,12 @@ const sendMessage = async () => {
         }
       }, 5000);
     } else if (response['products']) {
+      mainStore.loading = false
       mainStore.addMessage({content: response['message'], role: "assistant", products: response['products']})
     }
   } else if (selectedSearchType.value.name === "AI") {
     let response = await $Service.search(message.value)
+    mainStore.loading = false
     if (typeof response === "object" && response !== null) {
       mainStore.addMessage(response)
       // if (response["products"] !== undefined) {
@@ -92,6 +96,7 @@ const sendMessage = async () => {
       }
     }
   }
+
   message.value = ""
 }
 const selectItem = (item) => {

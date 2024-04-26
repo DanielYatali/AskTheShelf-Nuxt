@@ -102,10 +102,10 @@ onMounted(() => {
   </div>
 
   <!-- Chat Container -->
-  <div class="px-6 bg-white overflow-y-auto scroll-smooth mb-10">
+  <div class="md:px-6 bg-white overflow-y-auto scroll-smooth mb-10">
     <template v-for="(msg,index) in mainStore.messages">
       <template v-if="msg?.products && msg?.products?.length">
-        <Carousel :name="'carousels-'+index" :items="msg.products" :initialIndex="0"/>
+        <Carousel class="ml-4" :name="'carousels-'+index" :items="msg.products" :initialIndex="0"/>
       </template>
 
       <!--  User Chat Message -->
@@ -146,7 +146,7 @@ onMounted(() => {
       </div>
     </template>
     <div class="flex justify-end">
-    <Typing/>
+    <Typing v-if="mainStore?.loading"/>
     </div>
 
   </div>
