@@ -9,21 +9,21 @@
 
 
   </template>
-  <template v-else-if="!error">
-    <div class="flex items-center justify-center h-screen">
-      <div class="loader">
-        <div class="inner one"></div>
-        <div class="inner two"></div>
-        <div class="inner three"></div>
-        <div class="text">
-          <img :src="logo" alt="logo" class="logo">
-          <p>
-            Logging you in
-          </p>
-        </div>
-      </div>
-    </div>
-  </template>
+<!--  <template v-else-if="!error">-->
+<!--    <div class="flex items-center justify-center h-screen">-->
+<!--      <div class="loader">-->
+<!--        <div class="inner one"></div>-->
+<!--        <div class="inner two"></div>-->
+<!--        <div class="inner three"></div>-->
+<!--        <div class="text">-->
+<!--          <img :src="logo" alt="logo" class="logo">-->
+<!--          <p>-->
+<!--            Logging you in-->
+<!--          </p>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </template>-->
 </template>
 <script setup>
 import logo from "~/assets/logo.png";

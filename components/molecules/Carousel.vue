@@ -20,22 +20,24 @@ const scrollIntoView = (index) => {
     behavior: mediaQuery.matches ? 'auto' : 'smooth',
   })
 }
-
+const buy = (product) => {
+  window.open(product?.affiliate_url, '_blank')
+}
 </script>
 
 <template>
 <!--  <section class="flex flex-col items-center mx-2">-->
-    <ul class="flex overflow-x-auto gap-2 md:gap-6  snap-x snap-mandatory pb-6">
+    <ul class="flex overflow-x-auto gap-2 md:gap-6 snap-x snap-mandatory pb-6">
       <template v-for="(object, index) in items" :key="index">
-        <li class="shrink-0 snap-center shadow-lg pb-2">
-          <div>
-          <div class="h-36">
+        <li class="shrink-0 snap-center border pb-2 rounded-lg">
+          <div class="pt-4">
+          <div class="h-36 max-w-72 mx-auto">
             <img class="object-contain w-full h-full rounded-lg border-round" :src="object.image_url"
                  :alt="object.title">
           </div>
           <div class="grid grid-cols-1 px-2">
-            <div class="mb-3 mt-3 font-medium line-clamp-2 text-center w-72">{{ object?.title }}</div>
-            <div class="flex justify-between">
+            <div class="mb-3 mt-3 font-medium line-clamp-2 text-center max-w-72">{{ object?.title }}</div>
+            <div class="flex justify-between px-2">
               <p class="font-semibold text-xl">${{ object?.price }}</p>
               <div class="font-semibold text-xl flex items-center">{{ object?.rating }}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="yellow" viewBox="0 0 24 24" stroke-width="1.5"
@@ -54,7 +56,7 @@ const scrollIntoView = (index) => {
                 </svg>
                 Details
               </button>
-              <button class="flex bg-gray-100 rounded-lg items-center w-1/2">
+              <button @click="buy(object)" class="flex bg-gray-100 rounded-lg items-center w-1/2">
                 <svg class="h-10 w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60" fill-rule="evenodd">
                   <path
                       d="M72.038 40.703c-5.8 4.283-14.234 6.57-21.486 6.57-10.168 0-19.323-3.76-26.248-10.016-.544-.492-.057-1.162.596-.78 7.474 4.35 16.715 6.965 26.26 6.965 6.438 0 13.52-1.332 20.032-4.096.984-.418 1.806.644.844 1.358m2.418-2.764c-.74-.95-4.9-.448-6.782-.226-.57.07-.657-.427-.144-.784 3.32-2.338 8.77-1.663 9.407-.88s-.165 6.25-3.286 8.858c-.48.4-.936.187-.723-.344.7-1.75 2.272-5.672 1.528-6.625"

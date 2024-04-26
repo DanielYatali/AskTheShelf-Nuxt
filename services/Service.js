@@ -167,6 +167,13 @@ export class Service {
         // Handle nested lists
         markdown = markdown.replace(/<\/ul>\n<ul>/gim, '');
 
+        // Replace Markdown images with HTML images
+        markdown = markdown.replace(/\!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2" />');
+
+        // Replace Markdown links with HTML links
+        markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>');
+
         return markdown.trim();
     }
+
 }
