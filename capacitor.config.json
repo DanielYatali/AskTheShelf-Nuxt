@@ -1,5 +1,6 @@
 {
-  "appId": "localhost:3000",
+  "appId": "com.asktheshelf.app",
   "appName": "Ask The Shelf",
-  "webDir": "dist"
+  "webDir": "dist",
+  "bundleWebRuntime": true
 }

@@ -6,7 +6,22 @@
 <script setup>
 import { onMounted } from 'vue'
 import '~/assets/css/input.css'
+import {useAuth0} from "@auth0/auth0-vue";
+import {App as CapApp} from '@capacitor/app';
+import {Browser} from '@capacitor/browser';
+const { handleRedirectCallback } = useAuth0();
 
+CapApp.addListener("appUrlOpen", async ({ url }) => {
+  console.log("App opened with URL: " + url)
+  if (
+      url.includes("state") &&
+      (url.includes("code") || url.includes("error"))
+  ) {
+    await handleRedirectCallback(url);
+  }
+  // No-op on Android
+  await Browser.close();
+});
 // initialize components based on data attribute selectors
 // On page load or when changing themes, best to add inline in `head` to avoid FOUC
 

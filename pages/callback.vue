@@ -1,4 +1,6 @@
 <template>
+  Hey this is the callback
+  screen
   <template v-if="error">
     <div class="flex items-center justify-center h-screen">
       <div class="bg-white p-8 rounded-lg shadow-lg">
@@ -26,7 +28,6 @@
 <!--  </template>-->
 </template>
 <script setup>
-import logo from "~/assets/logo.png";
 import {useRoute} from 'vue-router';
 import {useAuth0} from "@auth0/auth0-vue";
 
