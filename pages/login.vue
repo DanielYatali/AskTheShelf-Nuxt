@@ -44,8 +44,11 @@ const login = () => {
     const queryParams = new URLSearchParams(query);
     urlString += `?${queryParams.toString()}`;
   }
+  const redirect_uri = `${config.public.appId}://${config.public.authDomain}/capacitor/${config.public.appId}`;
+  console.log(redirect_uri)
+  // return
   auth0.loginWithRedirect({
-    redirect_uri: config.public.appBase + urlString,
+    redirect_uri: redirect_uri + urlString,
   })
 }
 const {user, isAuthenticated} = useAuth0()
