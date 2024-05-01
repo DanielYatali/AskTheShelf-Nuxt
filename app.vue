@@ -22,7 +22,7 @@ CapApp.addListener("appUrlOpen", async ({ url }) => {
       navigateTo('/')
     }
     // No-op on Android
-    await Browser.close();
+    // await Browser.close();
   } catch (e) {
     console.error(e)
   }
