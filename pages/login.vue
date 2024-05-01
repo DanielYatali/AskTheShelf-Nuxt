@@ -36,7 +36,7 @@ const {query} = route
 //     invitation: query.invitation,
 //   })
 // }
-const login = () => {
+const login = async () => {
   let auth0 = useAuth0();
   localStorage.clear()
   let urlString = '/callback'
@@ -47,8 +47,10 @@ const login = () => {
   const redirect_uri = `${config.public.appId}://${config.public.authDomain}/capacitor/${config.public.appId}`;
   console.log(redirect_uri)
   // return
-  auth0.loginWithRedirect({
-    redirect_uri: redirect_uri + urlString,
+  await auth0.loginWithRedirect({
+    authorizationParams :{
+        redirect_uri: redirect_uri + urlString,
+    }
   })
 }
 const {user, isAuthenticated} = useAuth0()

@@ -12,15 +12,30 @@ import {Browser} from '@capacitor/browser';
 const { handleRedirectCallback } = useAuth0();
 
 CapApp.addListener("appUrlOpen", async ({ url }) => {
-  console.log("App opened with URL: " + url)
-  if (
-      url.includes("state") &&
-      (url.includes("code") || url.includes("error"))
-  ) {
-    await handleRedirectCallback(url);
+  try {
+    console.error("App opened with URL: " + url)
+    if (
+        url.includes("state") &&
+        (url.includes("code") || url.includes("error"))
+    ) {
+      await handleRedirectCallback(url);
+      navigateTo('/')
+    }
+    // No-op on Android
+    await Browser.close();
+  } catch (e) {
+    console.error(e)
   }
-  // No-op on Android
-  await Browser.close();
+//   console.error("App opened with URL: " + url)
+//   if (
+//       url.includes("state") &&
+//       (url.includes("code") || url.includes("error"))
+//   ) {
+//     await handleRedirectCallback(url);
+//     navigateTo('/welcome')
+//   }
+//   // No-op on Android
+//   await Browser.close();
 });
 // initialize components based on data attribute selectors
 // On page load or when changing themes, best to add inline in `head` to avoid FOUC

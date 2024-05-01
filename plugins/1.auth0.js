@@ -4,11 +4,12 @@ export default defineNuxtPlugin(nuxtApp => {
     const config = useRuntimeConfig()
     //only use this in the client side
     if (process.client) {
+        const redirect_uri = `${config.public.appId}://${config.public.authDomain}/capacitor/${config.public.appId}`;
         let auth0 = createAuth0({
             domain: config.public.authDomain,
             clientId: config.public.authClientId,
             authorizationParams: {
-                redirect_uri: "http://localhost:9000/callback",
+                redirect_uri: redirect_uri,
                 audience: config.public.authAudience,
             },
             cacheLocation: 'localstorage',
