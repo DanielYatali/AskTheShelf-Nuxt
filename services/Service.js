@@ -176,4 +176,33 @@ export class Service {
         return markdown.trim();
     }
 
+    async streamConversation(user) {
+        let token = await this.api.getAccessToken();
+        const eventSource = new EventSource(this.endpoint + "/api/v1/conversations/stream?token=" + encodeURIComponent(token));
+        eventSource.onmessage = (event) => {
+            console.log("message", event);
+            const message = JSON.parse(event.data);
+            this.mainStore.messages.push(message)
+        };
+        eventSource.onerror = (error) => {
+            console.error(error);
+        };
+    }
+    pollConversation(user) {
+        setInterval(async () => {
+            try {
+                let response = await this.api.request(this.endpoint + "/api/v1/conversations/" + user.sub, "GET")
+                if (response) {
+                    // this.mainStore.messages = response.messages
+                    // check if the last message is different from the last message in the store
+                    if (this.mainStore.messages.length === 0 || this.mainStore.messages[this.mainStore.messages.length - 1].id !== response.messages[response.messages.length - 1].id) {
+                        this.mainStore.messages = response.messages
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }, 10000);
+
+    }
 }

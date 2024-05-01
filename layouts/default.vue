@@ -9,13 +9,59 @@ const {user, isAuthenticated, getAccessTokenSilently, loginWithRedirect, logout,
 const showChat = ref(false)
 
 const mainStore = useMainStore();
-const {$Service} = useNuxtApp()
+const {$Service, $ApiRequest} = useNuxtApp()
 const router = useRoute();
 const {id} = router.params
 
 
+let ws = {}
 if (isAuthenticated.value) {
   await $Service.getConversation(user.value)
+  let token = await $ApiRequest.getAccessToken()
+  ws = new WebSocket("ws://localhost:8000/ws/" + user.value.sub)
+  let authMessage = {
+    type: "auth",
+    token: token
+  }
+  ws.onopen = function (event) {
+    ws.send(JSON.stringify(authMessage))
+  }
+  // $Service.pollConversation(user.value)
+  // await $Service.streamConversation(user.value)
+}
+ws.onmessage = function (event) {
+  console.log(event.data)
+  let response = JSON.parse(event.data)
+  response = JSON.parse(response)
+  mainStore.loading = false
+  message.value = ""
+  if (typeof response === "object" && response !== null) {
+    mainStore.addMessage(response)
+  } else {
+    if (response !== undefined) {
+      mainStore.addMessage({content: response, role: "assistant"})
+    } else {
+      mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
+    }
+  }
+}
+const sendMessage = (event) => {
+  if (!showChat.value) {
+    showChat.value = true
+  }
+  if (message.value === "") return
+  mainStore.addMessage({content: message.value, role: "user"})
+  let messageJson = {
+    message: message.value
+  }
+  if (selectedSearchType.value.name === "Link") {
+    messageJson["type"] = "link"
+
+  } else if (selectedSearchType.value.name === "AI") {
+    messageJson["type"] = "message"
+  }
+  ws.send(JSON.stringify(messageJson))
+  mainStore.loading = true
 }
 const items = [
   {
@@ -31,74 +77,76 @@ const selectedSearchType = ref(items[0])
 const message = ref("");
 const isOpen = ref(false)
 const messages = ref([])
-const sendMessage = async () => {
-  if (!showChat.value) {
-    showChat.value = true
-  }
-  if (message.value === "") return
-  mainStore.addMessage({content: message.value, role: "user"})
-  mainStore.loading = true
-  if (selectedSearchType.value.name === "Link") {
-    const response = await $Service.start_job(message.value)
-    const productId = response['product_id']
-    if (productId) {
-      mainStore.addMessage({content: "Please wait while we fetch the product", role: "assistant"})
-      const interval = setInterval(async () => {
-        try {
-          const product_json = await $Service.get_product(productId)
-          if (product_json['product_id']) {
-            // navigateTo(`/products/${product_json['product_id']}`)
-            mainStore.loading = false
-            await $Service.getConversation(user.value)
-            clearInterval(interval)
-          }
-        } catch (error) {
-          console.error("Error polling product:", error);
-          // Decide whether to clear the interval and stop polling in case of error
-        }
-      }, 5000);
-    } else if (response['products']) {
-      mainStore.loading = false
-      mainStore.addMessage({content: response['message'], role: "assistant", products: response['products']})
-    }
-  } else if (selectedSearchType.value.name === "AI") {
-    let response = await $Service.search(message.value)
-    mainStore.loading = false
-    if (typeof response === "object" && response !== null) {
-      mainStore.addMessage(response)
-      // if (response["products"] !== undefined) {
-      //   if (response["products"].length > 0) {
-      //     if (response["message"] !== undefined) {
-      //       mainStore.addMessage({content: response["message"], role: "assistant", products: response["products"]})
-      //     } else {
-      //
-      //       mainStore.addMessage({content: "", role: "assistant", products: response["products"]})
-      //     }
-      //   } else {
-      //     if (response["message"] !== undefined) {
-      //       mainStore.addMessage({content: response["message"], role: "assistant"})
-      //     } else {
-      //       mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-      //     }
-      //   }
-      // } else {
-      //   if (response !== undefined) {
-      //     mainStore.addMessage({content: response, role: "assistant"})
-      //   } else {
-      //     mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-      //   }
-      // }
-    } else {
-      if (response !== undefined) {
-        mainStore.addMessage({content: response, role: "assistant"})
-      } else {
-        mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-      }
-    }
-  }
-
-  message.value = ""
-}
+// const sendMessage = async () => {
+//   if (!showChat.value) {
+//     showChat.value = true
+//   }
+//   if (message.value === "") return
+//   mainStore.addMessage({content: message.value, role: "user"})
+//   mainStore.loading = true
+//   if (selectedSearchType.value.name === "Link") {
+//     const response = await $Service.start_job(message.value)
+//     const productId = response['product_id']
+//     if (productId) {
+//       mainStore.addMessage({content: "Please wait while we fetch the product", role: "assistant"})
+//       const interval = setInterval(async () => {
+//         try {
+//           const product_json = await $Service.get_product(productId)
+//           if (product_json['product_id']) {
+//             // navigateTo(`/products/${product_json['product_id']}`)
+//             mainStore.loading = false
+//             await $Service.getConversation(user.value)
+//             clearInterval(interval)
+//           }
+//         } catch (error) {
+//           console.error("Error polling product:", error);
+//           // Decide whether to clear the interval and stop polling in case of error
+//         }
+//       }, 5000);
+//     } else if (response['products']) {
+//       mainStore.loading = false
+//       mainStore.addMessage({content: response['message'], role: "assistant", products: response['products']})
+//     }
+//   } else if (selectedSearchType.value.name === "AI") {
+//     let response = await $Service.search(message.value)
+//
+//     mainStore.loading = false
+//     // return
+//     if (typeof response === "object" && response !== null) {
+//       mainStore.addMessage(response)
+//       // if (response["products"] !== undefined) {
+//       //   if (response["products"].length > 0) {
+//       //     if (response["message"] !== undefined) {
+//       //       mainStore.addMessage({content: response["message"], role: "assistant", products: response["products"]})
+//       //     } else {
+//       //
+//       //       mainStore.addMessage({content: "", role: "assistant", products: response["products"]})
+//       //     }
+//       //   } else {
+//       //     if (response["message"] !== undefined) {
+//       //       mainStore.addMessage({content: response["message"], role: "assistant"})
+//       //     } else {
+//       //       mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
+//       //     }
+//       //   }
+//       // } else {
+//       //   if (response !== undefined) {
+//       //     mainStore.addMessage({content: response, role: "assistant"})
+//       //   } else {
+//       //     mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
+//       //   }
+//       // }
+//     } else {
+//       if (response !== undefined) {
+//         mainStore.addMessage({content: response, role: "assistant"})
+//       } else {
+//         mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
+//       }
+//     }
+//   }
+//
+//   message.value = ""
+// }
 const selectItem = (item) => {
   console.log(item)
   selectedSearchType.value = item;
@@ -126,7 +174,7 @@ const logoutUser = async () => {
       </div>
     </main>
     <footer v-if="isAuthenticated" class="z-50 fixed inset-x-0 bottom-0 bg-white text-center p-4">
-      <div  class="flex items-center py-2 rounded-lg relative">
+      <div class="flex items-center py-2 rounded-lg relative">
           <textarea id="chat" rows="1"
                     class="pl-32 relative block p-3.5 w-full  text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Search..."
@@ -209,13 +257,15 @@ const logoutUser = async () => {
         <button type="button"
 
                 class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 group">
-          <img v-if = "user?.picture"
-              :src="user?.picture"
-              class="mr-3 h-8 rounded-full"
-              alt="Ask the shelf logo"
+          <img v-if="user?.picture"
+               :src="user?.picture"
+               class="mr-3 h-8 rounded-full"
+               alt="Ask the shelf logo"
           />
-          <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
           </svg>
 
         </button>

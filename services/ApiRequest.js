@@ -102,7 +102,7 @@ export class ApiRequest {
 
     /**
      * Gets the access token for API requests.
-     * @private
+     * @public
      * @returns {Promise<string>} - A promise that resolves to the access token.
      */
     async getAccessToken() {

@@ -9,5 +9,6 @@ export default defineNuxtPlugin(nuxtApp => {
     console.log("endpoint", config.public.serviceEndpoint)
     const api = new ApiRequest(config.public.authAudience, $auth0.getAccessTokenSilently, $auth0.getAccessTokenWithPopup, mainStore);
     const service = new Service(config.public.serviceEndpoint, mainStore, api);
+    nuxtApp.provide("ApiRequest", api);
     nuxtApp.provide("Service", service);
 })
