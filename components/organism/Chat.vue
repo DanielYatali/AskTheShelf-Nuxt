@@ -2,6 +2,9 @@
 import {useMainStore} from "~/store/main.js";
 import Carousel from "~/components/molecules/Carousel.vue";
 import Typing from "~/components/atoms/Typing.vue";
+import {useAuth0} from "@auth0/auth0-vue";
+
+const {user} = useAuth0()
 
 const {$Service} = useNuxtApp()
 
@@ -38,7 +41,7 @@ const models = ref([
   //   "name": "Llama3-8b-8192"
   // }
 ])
-const selectedModel = ref(props.llmModel ? props.llmModel :models.value[0].name)
+const selectedModel = ref(props.llmModel ? props.llmModel : models.value[0].name)
 const responsiveOptions = [
   {
     breakpoint: '1400px',
@@ -80,6 +83,9 @@ onMounted(() => {
     window.scrollTo({top: document.body.scrollHeight});
   }, 0)
 })
+const clearConversation = async () => {
+  await $Service.clear_conversation(user.value)
+}
 </script>
 
 <template>
@@ -95,7 +101,8 @@ onMounted(() => {
         <select class="p-2 font-semibold text-lg rounded-lg" v-model="selectedModel">
           <option v-for="model in models">{{ model.name }}</option>
         </select>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        <svg @click="clearConversation" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="1.5" stroke="currentColor"
              class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
         </svg>
@@ -148,7 +155,7 @@ onMounted(() => {
       </div>
     </template>
     <div class="flex justify-end">
-    <Typing v-if="mainStore?.loading"/>
+      <Typing v-if="mainStore?.loading"/>
     </div>
 
   </div>

@@ -5,6 +5,8 @@ import Chat from "~/components/organism/Chat.vue";
 import {useMainStore} from "~/store/main.js";
 import {useRoute} from "vue-router";
 
+const config = useRuntimeConfig()
+
 const {user, isAuthenticated, getAccessTokenSilently, loginWithRedirect, logout, isLoading} = useAuth0()
 const showChat = ref(false)
 
@@ -15,52 +17,97 @@ const {id} = router.params
 const llmModel = ref("gemini-pro")
 
 let ws = {}
+let reconnectInterval = 5000; // Time interval to attempt reconnection
+let reconnectAttempts = 0;
+let maxReconnectAttempts = 5;
+let serviceEndpoint = config.public.serviceEndpoint
+const domain = serviceEndpoint.split('/')[2]
+const socketUrl = "ws://" + domain + "/ws/"
+let isConnecting = false; // Flag to track connection status
+function connectWebSocket() {
+  if (isConnecting || (ws && ws.readyState === WebSocket.OPEN)) {
+    return; // Exit if already connecting or if the connection is open
+  }
+
+  isConnecting = true;
+  ws = new WebSocket(socketUrl + user.value.sub);
+
+  ws.onopen = async function (event) {
+    let token = await $ApiRequest.getAccessToken();
+    let authMessage = {
+      type: "auth",
+      token: token
+    };
+    ws.send(JSON.stringify(authMessage));
+    reconnectAttempts = 0; // Reset reconnection attempts on successful connection
+    isConnecting = false;
+  };
+
+  ws.onmessage = function (event) {
+    try {
+      let response = JSON.parse(event.data);
+      response = JSON.parse(response);
+      mainStore.loading = false;
+      message.value = "";
+      if (typeof response === "object" && response !== null) {
+        mainStore.addMessage(response);
+      } else {
+        mainStore.addMessage({ content: response || "Please try again, encountered an error", role: "assistant" });
+      }
+    } catch (e) {
+      console.log(e);
+      reconnectWebSocket();
+    }
+  };
+
+  ws.onerror = function (event) {
+    console.log('WebSocket Error:', event);
+    reconnectWebSocket();
+  };
+
+  ws.onclose = function (event) {
+    console.log('WebSocket Closed:', event);
+    reconnectWebSocket();
+  };
+}
+
+function reconnectWebSocket() {
+  if (reconnectAttempts < maxReconnectAttempts) {
+    reconnectAttempts++;
+    setTimeout(connectWebSocket, reconnectInterval);
+  } else {
+    console.log('Max reconnect attempts reached.');
+    // Optionally, notify the user or handle the failed reconnection in some way.
+  }
+}
+
+
 if (isAuthenticated.value) {
   await $Service.getConversation(user.value)
-  let token = await $ApiRequest.getAccessToken()
-  ws = new WebSocket("ws://localhost:8000/ws/" + user.value.sub)
-  let authMessage = {
-    type: "auth",
-    token: token
-  }
-  ws.onopen = function (event) {
-    ws.send(JSON.stringify(authMessage))
-  }
-}
-ws.onmessage = function (event) {
-  console.log(event.data)
-  let response = JSON.parse(event.data)
-  response = JSON.parse(response)
-  mainStore.loading = false
-  message.value = ""
-  if (typeof response === "object" && response !== null) {
-    mainStore.addMessage(response)
-  } else {
-    if (response !== undefined) {
-      mainStore.addMessage({content: response, role: "assistant"})
-    } else {
-      mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-    }
-  }
+  connectWebSocket()
 }
 const sendMessage = (event) => {
-  if (!showChat.value) {
-    showChat.value = true
+  try {
+    if (!showChat.value) {
+      showChat.value = true
+    }
+    if (message.value === "") return
+    mainStore.addMessage({content: message.value, role: "user"})
+    let messageJson = {
+      message: message.value
+    }
+    if (selectedSearchType.value.name === "Link") {
+      messageJson["type"] = "link"
+      messageJson["url"] = message.value
+    } else if (selectedSearchType.value.name === "AI") {
+      messageJson["type"] = "message"
+      messageJson["model"] = llmModel.value
+    }
+    ws.send(JSON.stringify(messageJson))
+    mainStore.loading = true
+  } catch (e) {
+    console.log(e)
   }
-  if (message.value === "") return
-  mainStore.addMessage({content: message.value, role: "user"})
-  let messageJson = {
-    message: message.value
-  }
-  if (selectedSearchType.value.name === "Link") {
-    messageJson["type"] = "link"
-    messageJson["url"] = message.value
-  } else if (selectedSearchType.value.name === "AI") {
-    messageJson["type"] = "message"
-    messageJson["model"] = llmModel.value
-  }
-  ws.send(JSON.stringify(messageJson))
-  mainStore.loading = true
 }
 const items = [
   {
@@ -76,76 +123,7 @@ const selectedSearchType = ref(items[0])
 const message = ref("");
 const isOpen = ref(false)
 const messages = ref([])
-// const sendMessage = async () => {
-//   if (!showChat.value) {
-//     showChat.value = true
-//   }
-//   if (message.value === "") return
-//   mainStore.addMessage({content: message.value, role: "user"})
-//   mainStore.loading = true
-//   if (selectedSearchType.value.name === "Link") {
-//     const response = await $Service.start_job(message.value)
-//     const productId = response['product_id']
-//     if (productId) {
-//       mainStore.addMessage({content: "Please wait while we fetch the product", role: "assistant"})
-//       const interval = setInterval(async () => {
-//         try {
-//           const product_json = await $Service.get_product(productId)
-//           if (product_json['product_id']) {
-//             // navigateTo(`/products/${product_json['product_id']}`)
-//             mainStore.loading = false
-//             await $Service.getConversation(user.value)
-//             clearInterval(interval)
-//           }
-//         } catch (error) {
-//           console.error("Error polling product:", error);
-//           // Decide whether to clear the interval and stop polling in case of error
-//         }
-//       }, 5000);
-//     } else if (response['products']) {
-//       mainStore.loading = false
-//       mainStore.addMessage({content: response['message'], role: "assistant", products: response['products']})
-//     }
-//   } else if (selectedSearchType.value.name === "AI") {
-//     let response = await $Service.search(message.value)
-//
-//     mainStore.loading = false
-//     // return
-//     if (typeof response === "object" && response !== null) {
-//       mainStore.addMessage(response)
-//       // if (response["products"] !== undefined) {
-//       //   if (response["products"].length > 0) {
-//       //     if (response["message"] !== undefined) {
-//       //       mainStore.addMessage({content: response["message"], role: "assistant", products: response["products"]})
-//       //     } else {
-//       //
-//       //       mainStore.addMessage({content: "", role: "assistant", products: response["products"]})
-//       //     }
-//       //   } else {
-//       //     if (response["message"] !== undefined) {
-//       //       mainStore.addMessage({content: response["message"], role: "assistant"})
-//       //     } else {
-//       //       mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-//       //     }
-//       //   }
-//       // } else {
-//       //   if (response !== undefined) {
-//       //     mainStore.addMessage({content: response, role: "assistant"})
-//       //   } else {
-//       //     mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-//       //   }
-//       // }
-//     } else {
-//       if (response !== undefined) {
-//         mainStore.addMessage({content: response, role: "assistant"})
-//       } else {
-//         mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
-//       }
-//     }
-//   }
-//
-//   message.value = ""
-// }
+
 const selectItem = (item) => {
   console.log(item)
   selectedSearchType.value = item;

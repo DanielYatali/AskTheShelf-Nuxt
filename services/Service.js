@@ -98,14 +98,10 @@ export class Service {
 
     async start_job(url) {
         return this.api.request(this.endpoint + "/api/v1/jobs/", "POST", "application/json", {url: url})
-
     }
-
-    async get_job(id) {
-        return this.api.request(this.endpoint + "/api/v1/jobs/" + id, "GET")
+    async clear_conversation(user) {
+        return this.api.request(this.endpoint + "/api/v1/conversations/" + user.sub, "DELETE")
     }
-
-
     async get_product(id) {
         try {
             if (!id) {
@@ -188,21 +184,5 @@ export class Service {
             console.error(error);
         };
     }
-    pollConversation(user) {
-        setInterval(async () => {
-            try {
-                let response = await this.api.request(this.endpoint + "/api/v1/conversations/" + user.sub, "GET")
-                if (response) {
-                    // this.mainStore.messages = response.messages
-                    // check if the last message is different from the last message in the store
-                    if (this.mainStore.messages.length === 0 || this.mainStore.messages[this.mainStore.messages.length - 1].id !== response.messages[response.messages.length - 1].id) {
-                        this.mainStore.messages = response.messages
-                    }
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        }, 10000);
 
-    }
 }
