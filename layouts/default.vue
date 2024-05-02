@@ -22,7 +22,8 @@ let reconnectAttempts = 0;
 let maxReconnectAttempts = 5;
 let serviceEndpoint = config.public.serviceEndpoint
 const domain = serviceEndpoint.split('/')[2]
-const socketUrl = "ws://" + domain + "/ws/"
+const socketUrl = "wss://" + domain + "/ws/"
+// const secureSocketUrl = "wss://" + domain + "/ws/"
 let isConnecting = false; // Flag to track connection status
 function connectWebSocket() {
   if (isConnecting || (ws && ws.readyState === WebSocket.OPEN)) {
@@ -52,7 +53,7 @@ function connectWebSocket() {
       if (typeof response === "object" && response !== null) {
         mainStore.addMessage(response);
       } else {
-        mainStore.addMessage({ content: response || "Please try again, encountered an error", role: "assistant" });
+        mainStore.addMessage({content: response || "Please try again, encountered an error", role: "assistant"});
       }
     } catch (e) {
       console.log(e);
@@ -221,7 +222,7 @@ const logoutUser = async () => {
           />
         </button>
 
-        <button @click="logoutUser" type="button"
+        <button @click="navigateTo('/logout')" type="button"
                 class="inline-flex flex-col items-center justify-center p-4 hover:bg-gray-50 group">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor" class="w-6 h-6">

@@ -85,27 +85,23 @@ onMounted(() => {
 })
 const clearConversation = async () => {
   await $Service.clear_conversation(user.value)
+  mainStore.messages = []
 }
 </script>
 
 <template>
   <div class="sticky z-40 bg-white top-0 flex flex-col space-y-1.5 pb-6">
-    <div class="mt-2 mx-2">
+    <div class="mx-2">
       <div class="flex justify-between items-center">
-        <button class="rounded-lg">
-          <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 6a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 6a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
-          </svg>
-        </button>
-        <select class="p-2 font-semibold text-lg rounded-lg" v-model="selectedModel">
+        <p class="hidden sm:block text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-red-400 to-orange-500">
+          AskTheShelf
+        </p>
+        <select class="p-2 font-semibold text-lg rounded-lg border " v-model="selectedModel">
           <option v-for="model in models">{{ model.name }}</option>
         </select>
-        <svg @click="clearConversation" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke-width="1.5" stroke="currentColor"
-             class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-        </svg>
+        <button @click="clearConversation"
+                class="bg-red-500 hover:bg-red-700 text-sm text-white font-bold py-2 px-4 rounded-lg">Clear Chat
+        </button>
       </div>
     </div>
   </div>
