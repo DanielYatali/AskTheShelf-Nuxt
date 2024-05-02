@@ -12,7 +12,7 @@ const mainStore = useMainStore();
 const {$Service, $ApiRequest} = useNuxtApp()
 const router = useRoute();
 const {id} = router.params
-
+const llmModel = ref("gemini-pro")
 
 let ws = {}
 if (isAuthenticated.value) {
@@ -26,8 +26,6 @@ if (isAuthenticated.value) {
   ws.onopen = function (event) {
     ws.send(JSON.stringify(authMessage))
   }
-  // $Service.pollConversation(user.value)
-  // await $Service.streamConversation(user.value)
 }
 ws.onmessage = function (event) {
   console.log(event.data)
@@ -56,9 +54,10 @@ const sendMessage = (event) => {
   }
   if (selectedSearchType.value.name === "Link") {
     messageJson["type"] = "link"
-
+    messageJson["url"] = message.value
   } else if (selectedSearchType.value.name === "AI") {
     messageJson["type"] = "message"
+    messageJson["model"] = llmModel.value
   }
   ws.send(JSON.stringify(messageJson))
   mainStore.loading = true
@@ -167,7 +166,7 @@ const logoutUser = async () => {
     <main class="p-4 h-auto mb-28">
       <div
           v-if="showChat">
-        <Chat :product="mainStore.product" :messages="messages"/>
+        <Chat :llm-model="llmModel" @update:llm-model="(value) => llmModel=value"/>
       </div>
       <div v-else>
         <slot/>

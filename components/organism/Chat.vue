@@ -6,8 +6,7 @@ import Typing from "~/components/atoms/Typing.vue";
 const {$Service} = useNuxtApp()
 
 const props = defineProps({
-  product: Object,
-  messages: Array
+  llmModel: String
 })
 const tabs = [
   {id: 1, name: 'Architecto'},
@@ -27,19 +26,19 @@ const renderMarkdown = (text) => {
 }
 const models = ref([
   {
-    "name": "General",
-    "description": "General model for all products",
     "id": 1,
-    "value": "general"
+    "name": "gemini-pro"
   },
   {
-    "name": "Product",
-    "description": "Product model for all products",
     "id": 2,
-    "value": "product"
-  }
+    "name": "gpt-3.5-turbo"
+  },
+  // {
+  //   "id": 3,
+  //   "name": "Llama3-8b-8192"
+  // }
 ])
-const selectedModel = ref(models.value[0].name)
+const selectedModel = ref(props.llmModel ? props.llmModel :models.value[0].name)
 const responsiveOptions = [
   {
     breakpoint: '1400px',
@@ -67,7 +66,12 @@ const scrollToBottom = (timeout) => {
     window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
   }, timeout)
 }
+const emits = defineEmits(['update:llmModel'])
 
+watch(() => selectedModel.value, (value) => {
+  console.log(value)
+  emits('update:llmModel', value)
+})
 watch(() => mainStore.messages, () => {
   scrollToBottom(100)
 }, {deep: true})
@@ -97,8 +101,6 @@ onMounted(() => {
         </svg>
       </div>
     </div>
-    <p v-if="selectedModel === 'General'" class="mt-1 text-center text-gray-600">Results will be general</p>
-    <p v-else class="mt-1 text-center text-gray-600">Results will be based on the context of the current product</p>
   </div>
 
   <!-- Chat Container -->
