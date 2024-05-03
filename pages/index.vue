@@ -148,9 +148,9 @@ const handleTutorial = async () => {
     }, 3000 * i)
   }
 }
-watch(() => messages.value, () => {
-  scrollToBottom(100)
-}, {deep: true})
+// watch(() => messages.value, () => {
+//   scrollToBottom(100)
+// }, {deep: true})
 handleTutorial()
 const selectedModel = ref(models.value[0].name)
 const scrollToBottom = (timeout) => {
