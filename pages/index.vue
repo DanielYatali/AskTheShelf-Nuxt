@@ -183,7 +183,7 @@ const clearConversation = async () => {
                 <p class="text-xl md:text-2xl mb-8">
                   <span class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-red-400 to-orange-500">AskTheShelf</span>
                   makes shopping easy with <span class="font-semibold">web scraping</span>
-                  and <span class="font-semibold">natural language search</span>.</p>
+                  and <span class="font-semibold">natural language searches</span>.</p>
 
                 <ul class="text-lg md:text-xl mb-8 space-y-4">
                   <li>Say goodbye to endless scrolling through product pages.</li>

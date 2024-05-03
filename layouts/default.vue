@@ -68,6 +68,7 @@ function connectWebSocket() {
 
   ws.onclose = function (event) {
     console.log('WebSocket Closed:', event);
+    mainStore.addMessage({content: "Socket connection closed, if issue persist refresh the page", role: "assistant"});
     reconnectWebSocket();
   };
 }
@@ -78,6 +79,7 @@ function reconnectWebSocket() {
     setTimeout(connectWebSocket, reconnectInterval);
   } else {
     console.log('Max reconnect attempts reached.');
+    mainStore.addMessage({content: "Please fresh the page, socket connection not established", role: "assistant"});
     // Optionally, notify the user or handle the failed reconnection in some way.
   }
 }
@@ -93,6 +95,7 @@ const sendMessage = (event) => {
       showChat.value = true
     }
     if (message.value === "") return
+    if (mainStore.loading) return
     mainStore.addMessage({content: message.value, role: "user"})
     let messageJson = {
       message: message.value
@@ -107,6 +110,8 @@ const sendMessage = (event) => {
     ws.send(JSON.stringify(messageJson))
     mainStore.loading = true
   } catch (e) {
+    mainStore.loading = false
+    mainStore.addMessage({content: "Please try again, encountered an error", role: "assistant"})
     console.log(e)
   }
 }
