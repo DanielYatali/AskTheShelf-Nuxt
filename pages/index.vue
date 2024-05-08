@@ -10,6 +10,27 @@ const {user, isAuthenticated, getAccessTokenSilently, loginWithRedirect, logout,
 console.log(user)
 const mainStore = useMainStore();
 const {$Service} = useNuxtApp()
+useHead({
+  title: 'AskTheShelf',
+  meta: [
+    {
+      name: 'description',
+      content: 'Search for products using natural language queries',
+    },
+    {name: 'keywords', content: 'AskTheShelf, ask the shelf'},
+  ],
+})
+
+useSeoMeta({
+  title: 'AskTheShelf',
+  ogTitle: 'AskTheShelf',
+  description: 'Search for products using natural language queries',
+  ogDescription: 'Search for products using natural language queries',
+  ogImage: 'https://i.ibb.co/PYzT28T/logo.png',
+  twitterCard: 'summary_large_image',
+})
+
+
 // watch(isAuthenticated.value, async (value) => {
 //   if (value) {
 //     await handleLogin()
@@ -148,9 +169,6 @@ const handleTutorial = async () => {
     }, 3000 * i)
   }
 }
-// watch(() => messages.value, () => {
-//   scrollToBottom(100)
-// }, {deep: true})
 handleTutorial()
 const selectedModel = ref(models.value[0].name)
 const scrollToBottom = (timeout) => {
@@ -165,11 +183,10 @@ const clearConversation = async () => {
 
 
 </script>
-
-
 <template>
   <div class="relative">
-    <div class="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-red-400 to-orange-500">
+    <div
+        class="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-red-400 to-orange-500">
       AskTheShelf
     </div>
     <div class="relative">
@@ -181,7 +198,8 @@ const clearConversation = async () => {
                 <h1 class="text-5xl md:text-7xl font-extrabold mb-6">Less Scrolling <span class="text-red-500">More Shopping</span>
                 </h1>
                 <p class="text-xl md:text-2xl mb-8">
-                  <span class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-red-400 to-orange-500">AskTheShelf</span>
+                  <span
+                      class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-red-400 to-orange-500">AskTheShelf</span>
                   makes shopping easy with <span class="font-semibold">web scraping</span>
                   and <span class="font-semibold">natural language searches</span>.</p>
 
